@@ -1,0 +1,28 @@
+/* Google Font Import (Fredoka One) */
+@import url('https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap');
+
+/* Tailwind'in temel katmanlarını yükle */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+  YENİ EKLEME: MERKEZLEME DÜZELTMESİ
+  Bu kod, React uygulamasının (root) ve tüm sayfanın (html, body)
+  ekranı %100 kaplamasını sağlar.
+  Bizim App.tsx'teki ortalama komutlarımızın çalışması için bu ZORUNLUDUR.
+*/
+html,
+body,
+#root {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    /* Eğlenceli tema arka plan rengimiz */
+    background-color: #F0F4FF; /* tailwind.config.js'teki oyun-bg-light */
+}
+
