@@ -1,13 +1,98 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ai-photo-game</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+
+    <script id="tailwind-script" src="https://cdn.tailwindcss.com"></script>
+
+    <link id="orbitron-font" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet">
+
+    <style id="custom-game-styles">
+        :root {
+            /* Yeni Renk Paleti (Neon / Koyu Tema) */
+            --color-oyun-arkaplan: #1A2035;       /* Koyu Lacivert */
+            --color-oyun-kart-dark: #2A3045;      /* Orta Koyu Lacivert */
+            --color-oyun-kart-dark-light: #3A4055;/* Açık Koyu Lacivert */
+            --color-oyun-text-light: #E0EFFF;    /* Çok Açık Mavi (Beyaz) */
+            --color-oyun-text-dark: #8A94B3;      /* Gri Mavi (Soluk) */
+
+            --color-oyun-primary: #00F5D4;        /* Neon Cyan (Ana) */
+            --color-oyun-primary-light: #9CFEF0;  /* Açık Cyan */
+            --color-oyun-primary-dark: #00BFA9;   /* Koyu Cyan */
+
+            --color-oyun-accent: #FF00A8;         /* Neon Pembe (Vurgu) */
+
+            /* Takma adlar */
+            --color-oyun-yesil: var(--color-oyun-primary); /* Doğru = Cyan */
+            --color-oyun-kirmizi: var(--color-oyun-accent);  /* Yanlış = Pembe */
+        }
+
+        /* Yeni Yardımcı Sınıflar */
+        .text-oyun-primary { color: var(--color-oyun-primary); }
+        .bg-oyun-primary { background-color: var(--color-oyun-primary); }
+        .border-oyun-primary { border-color: var(--color-oyun-primary); }
+        .hover\:bg-oyun-primary-dark:hover { background-color: var(--color-oyun-primary-dark); }
+        .hover\:border-oyun-primary-light:hover { border-color: var(--color-oyun-primary-light); }
+
+        .text-oyun-accent { color: var(--color-oyun-accent); }
+        .border-oyun-accent { border-color: var(--color-oyun-accent); }
+        .hover\:bg-oyun-accent:hover { background-color: var(--color-oyun-accent); }
+
+        .bg-oyun-arkaplan { background-color: var(--color-oyun-arkaplan); }
+        .text-oyun-arkaplan { color: var(--color-oyun-arkaplan); }
+        .group-hover\:text-oyun-arkaplan:hover .group:hover { color: var(--color-oyun-arkaplan); }
+
+        .bg-oyun-kart-dark { background-color: var(--color-oyun-kart-dark); }
+        .hover\:bg-oyun-kart-dark-light:hover { background-color: var(--color-oyun-kart-dark-light); }
+
+        .bg-oyun-kart-dark-light { background-color: var(--color-oyun-kart-dark-light); }
+        .border-oyun-kart-dark-light { border-color: var(--color-oyun-kart-dark-light); }
+
+        .text-oyun-text-light { color: var(--color-oyun-text-light); }
+        .group-hover\:text-oyun-text-light:hover .group:hover { color: var(--color-oyun-text-light); }
+
+        .text-oyun-text-dark { color: var(--color-oyun-text-dark); }
+        .group-hover\:text-oyun-text-dark:hover .group:hover { color: var(--color-oyun-text-dark); }
+
+        .text-oyun-kirmizi { color: var(--color-oyun-kirmizi); }
+        .border-oyun-kirmizi { border-color: var(--color-oyun-kirmizi); }
+
+        .text-oyun-yesil { color: var(--color-oyun-yesil); }
+        .border-oyun-yesil { border-color: var(--color-oyun-yesil); }
+        .hover\:bg-oyun-yesil:hover { background-color: var(--color-oyun-yesil); }
+
+        /* Yeni Font ve Efekt */
+        .font-orbitron { font-family: 'Orbitron', sans-serif; }
+        .drop-shadow-neon-primary { filter: drop-shadow(0 0 8px var(--color-oyun-primary)); }
+
+
+        /* Animasyonlar (Değişmedi) */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .animate-fade-in { animation: fadeIn 0.5s ease-out; }
+
+        @keyframes popIn {
+            from { opacity: 0; transform: translateY(20px) scale(0.9); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .animate-pop-in { animation: popIn 0.4s ease-out; }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
+            20%, 40%, 60%, 80% { transform: translateX(10px); }
+        }
+        .shake { animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both; }
+    </style>
+
+</head>
+<body>
+<div id="root"></div>
+<script type="module" src="/src/main.tsx"></script>
+</body>
 </html>
