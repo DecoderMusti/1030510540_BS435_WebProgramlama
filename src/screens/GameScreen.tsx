@@ -44,39 +44,42 @@ const GameScreen: React.FC<GameScreenProps> = ({ gameMode, onGameEnd, score }) =
 
     const handleImageClick = (id: string) => {
         if (isPaused) return;
-        setIsPaused(true);
+
         setSelectedImageId(id);
+        setIsPaused(true); // Tıklama anında oyunu dondur (sonuç gösterimi için)
+
         const isCorrect = id === roundData?.aiImageId;
 
         if (gameMode === 'classic') {
             if (guessState === 'first') {
                 if (isCorrect) {
+                    // İlk hakta doğru -> KAZANDI
                     setTimeout(() => onGameEnd(true), 1500);
                 } else {
+                    // İlk hakta yanlış -> DEVAM EDİYOR (İpucu ver)
                     setAnimation('shake');
                     setTimeout(() => {
                         setHint(roundData?.hint || '');
                         setGuessState('second');
-                        setIsPaused(false);
+                        setIsPaused(false); // Tekrar tıklamaya izin ver
                         setAnimation('');
                     }, 1000);
                 }
             } else {
+                // İkinci hak -> SONUÇ NE OLURSA OLSUN BİTER
                 setTimeout(() => onGameEnd(isCorrect), 1500);
             }
         } else if (gameMode === 'streak') {
             if (isCorrect) {
-                // Doğru, skoru artır (App'ta) ve yeni tura geç
                 onGameEnd(true);
                 setTimeout(() => loadNewRound(), 1000);
             } else {
-                // Yanlış, oyun bitti
                 setAnimation('shake');
                 setTimeout(() => onGameEnd(false), 1500);
             }
         } else { // TimeAttack
             if (isCorrect) {
-                onGameEnd(true); // Skoru artır (App'ta)
+                onGameEnd(true);
                 setTimeout(() => loadNewRound(), 1000);
             } else {
                 setTimer(prev => Math.max(0, prev - 5));
@@ -93,9 +96,7 @@ const GameScreen: React.FC<GameScreenProps> = ({ gameMode, onGameEnd, score }) =
         return <div className="text-3xl text-oyun-text-light">Resimler Yükleniyor...</div>;
     }
 
-    const isRoundOver = (gameMode === 'classic' && (guessState === 'second' && !!selectedImageId)) ||
-        (gameMode === 'classic' && (guessState === 'first' && isPaused && !!selectedImageId));
-
+    // Mod adını belirle
     let modeName = '';
     if (gameMode === 'classic') modeName = 'Beyin Avı';
     else if (gameMode === 'timeAttack') modeName = 'Zaman Yarışı';
@@ -103,7 +104,7 @@ const GameScreen: React.FC<GameScreenProps> = ({ gameMode, onGameEnd, score }) =
 
     return (
         <div className="w-full flex flex-col items-center p-4 sm:p-8 max-w-6xl animate-fade-in text-oyun-text-light">
-            {/* Üst Bar (Tasarım Güncellendi) */}
+            {/* Üst Bar */}
             <header className="w-full mb-8 flex justify-between items-center text-lg sm:text-xl md:text-3xl font-extrabold">
                 <div>Mod: <span className="text-oyun-primary capitalize">{modeName}</span></div>
                 <div>Skor: <span className="text-oyun-accent">{score}</span></div>
@@ -115,7 +116,7 @@ const GameScreen: React.FC<GameScreenProps> = ({ gameMode, onGameEnd, score }) =
                 )}
             </header>
 
-            {/* Başlık (Tasarım Güncellendi) */}
+            {/* Başlık */}
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold mb-8 text-oyun-primary drop-shadow-neon-primary font-orbitron text-center">
                 {gameMode === 'classic' && guessState === 'first' && 'KİM SAKLANIYOR?'}
                 {gameMode === 'classic' && guessState === 'second' && 'İPUCUNU KULLAN, TEKRAR DENE!'}
@@ -125,19 +126,54 @@ const GameScreen: React.FC<GameScreenProps> = ({ gameMode, onGameEnd, score }) =
 
             {/* Görsel Izgarası */}
             <div className={`grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-6 max-w-6xl w-full mb-8 ${animation}`}>
-                {roundData.images.map(image => (
-                    <ImageCard
-                        key={image.id}
-                        image={image}
-                        onClick={handleImageClick}
-                        isDisabled={(guessState === 'second' && image.id === selectedImageId && !image.isAI) || isPaused}
-                        isRevealed={isRoundOver || (gameMode !== 'classic' && isPaused)}
-                        isSelected={image.id === selectedImageId}
-                    />
-                ))}
+                {roundData.images.map(image => {
+
+                    const isSelected = image.id === selectedImageId;
+                    let isRevealed = false;
+
+                    // --- KART GÖSTERİM MANTIĞI ---
+
+                    // 1. Kullanıcı bu karta tıkladıysa (Sonuç ne olursa olsun göster)
+                    if (isPaused && isSelected) {
+                        isRevealed = true;
+                    }
+
+                    // 2. Tur tamamen bittiyse HERKESİ göster (AI ve diğerlerini aç)
+                    let isRoundOver = false;
+
+                    if (gameMode === 'classic') {
+                        // Klasik Modda Tur Bitme Şartları:
+                        // a) İkinci tahmin yapıldıysa
+                        if (guessState === 'second' && isPaused) isRoundOver = true;
+                        // b) İlk tahmin yapıldı VE Doğruysa (Yanlışsa bitmez!)
+                        if (guessState === 'first' && isPaused && isSelected && image.id === roundData.aiImageId) isRoundOver = true;
+                    } else {
+                        // Diğer modlarda pause olduysa tur bitmiştir
+                        if (isPaused) isRoundOver = true;
+                    }
+
+                    if (isRoundOver) {
+                        isRevealed = true;
+                    }
+                    // -----------------------------
+
+                    // Beyin avında, ikinci haktaysak ve bu kart daha önce seçilmiş (yanlış) kartsa, tıklanamaz olsun.
+                    const isPreviouslyWrongGuess = gameMode === 'classic' && guessState === 'second' && isSelected;
+
+                    return (
+                        <ImageCard
+                            key={image.id}
+                            image={image}
+                            onClick={handleImageClick}
+                            isDisabled={isPreviouslyWrongGuess || isPaused}
+                            isRevealed={isRevealed}
+                            isSelected={isSelected}
+                        />
+                    );
+                })}
             </div>
 
-            {/* İpucu Alanı (Tasarım Güncellendi) */}
+            {/* İpucu Alanı */}
             {gameMode === 'classic' && hint && (
                 <div className="bg-oyun-kart-dark p-4 sm:p-6 rounded-2xl shadow-xl w-full max-w-3xl flex items-center animate-pop-in border-4 border-oyun-primary">
                     <span className="text-4xl sm:text-5xl mr-4">💡</span>
