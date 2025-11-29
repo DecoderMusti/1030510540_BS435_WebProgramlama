@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import type { GameState, GameMode } from './types/game';
-
 import StartScreen from './screens/StartScreen';
 import GameScreen from './screens/GameScreen';
 import ResultScreen from './screens/ResultScreen';
@@ -10,8 +9,6 @@ const App: React.FC = () => {
     const [gameMode, setGameMode] = useState<GameMode>('classic');
     const [score, setScore] = useState(0);
     const [lastResult, setLastResult] = useState(false);
-
-
 
     const handleStartGame = (mode: GameMode) => {
         setGameMode(mode);
@@ -23,25 +20,19 @@ const App: React.FC = () => {
         setLastResult(wasCorrect);
 
         if (gameMode === 'timeAttack') {
-            if (finalScore !== undefined) { // Süre doldu
+            if (finalScore !== undefined) {
                 setScore(finalScore);
                 setGameState('resultScreen');
-            } else if (wasCorrect) { // Doğru bildi, skoru artır
+            } else if (wasCorrect) {
                 setScore(prev => prev + 1);
-                // Oyun 'playing' durumunda kalır
             }
-            // Yanlışsa (finalScore == undefined && !wasCorrect),
-            // GameScreen zamanı düşürür, oyun 'playing' kalır
-
         } else if (gameMode === 'streak') {
-            if (wasCorrect) { // Doğru bildi, skoru artır
+            if (wasCorrect) {
                 setScore(prev => prev + 1);
-                // Oyun 'playing' durumunda kalır
-            } else { // Yanlış bildi, oyun bitti
+            } else {
                 setGameState('resultScreen');
             }
-
-        } else { // 'classic' mod
+        } else { // classic
             if (wasCorrect) {
                 setScore(prev => prev + 1);
             }
@@ -51,7 +42,7 @@ const App: React.FC = () => {
 
     const handlePlayAgain = () => {
         if (gameMode === 'timeAttack' || gameMode === 'streak') {
-            setScore(0); // Zaman ve Seri modlarında skor sıfırlanır
+            setScore(0);
         }
         setGameState('playing');
     };
@@ -84,12 +75,28 @@ const App: React.FC = () => {
                 />
             );
         }
-        return <div>Yükleniyor...</div>;
+        return <div className="text-white animate-pulse">Yükleniyor...</div>;
     };
 
     return (
-        <main className="min-h-screen w-full flex flex-col items-center justify-center p-4 bg-oyun-arkaplan">
-            {renderCurrentScreen()}
+        // GÜNCELLENMİŞ ARKA PLAN YAPISI
+        // Dış kaynak kullanılmadan, CSS Gradient ve Blur efektleri ile modern görünüm
+        <main className="min-h-screen w-full flex flex-col items-center justify-center p-4 bg-[#0f172a] relative overflow-hidden">
+
+            {/* 1. Katman: Ana Gradient (Koyu Lacivert - Siyah Geçişi) */}
+            <div className="absolute inset-0 bg-gradient-to-br from-[#0f172a] via-[#1e1b4b] to-[#312e81] opacity-80 z-0" />
+
+            {/* 2. Katman: Dekoratif Işıklar (Blur Efektli) */}
+            {/* Sol üst köşe: Cyan Işık */}
+            <div className="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] bg-oyun-primary/20 rounded-full blur-[120px] z-0 animate-pulse" />
+
+            {/* Sağ alt köşe: Pembe Işık */}
+            <div className="absolute bottom-[-20%] right-[-10%] w-[500px] h-[500px] bg-oyun-accent/15 rounded-full blur-[120px] z-0 animate-pulse" style={{ animationDuration: '4s' }} />
+
+            {/* İçerik Alanı (Z-Index ile öne alındı, böylece arka planın üstünde kalır) */}
+            <div className="z-10 w-full flex justify-center">
+                {renderCurrentScreen()}
+            </div>
         </main>
     );
 };

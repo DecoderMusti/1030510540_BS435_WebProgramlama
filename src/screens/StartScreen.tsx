@@ -7,69 +7,91 @@ interface StartScreenProps {
 
 const StartScreen: React.FC<StartScreenProps> = ({ onStartGame }) => {
     return (
-        <div className="flex flex-col items-center text-center p-4 sm:p-8 w-full max-w-4xl animate-fade-in text-oyun-text-light">
-            <span className="text-6xl sm:text-7xl mb-6">🕵️</span>
-            <h1 className="text-4xl sm:text-6xl md:text-7xl font-extrabold mb-4 text-oyun-primary drop-shadow-neon-primary font-orbitron">
-                AI DEDEKTİFİ
-            </h1>
-            <p className="text-lg sm:text-xl md:text-2xl text-oyun-text-dark max-w-2xl mb-8">
-                Üç resimden hangisinin yapay zeka tarafından yapıldığını bulabilir misin?
-            </p>
+        <div className="flex flex-col items-center justify-center w-full max-w-4xl mx-auto animate-fade-in text-oyun-text-light">
 
-            <div className="bg-oyun-kart-dark p-6 sm:p-8 rounded-3xl shadow-2xl mb-10 w-full border-4 border-oyun-primary">
-                <h2 className="text-3xl sm:text-4xl font-extrabold mb-6 text-oyun-primary text-left font-orbitron">Oyun Modları</h2>
-
-                {/* Mod 1: Beyin Avı */}
-                <button
-                    onClick={() => onStartGame('classic')}
-                    className="group bg-oyun-kart-dark-light p-4 sm:p-6 rounded-2xl mb-4 cursor-pointer transition-all duration-300 hover:bg-oyun-primary hover:shadow-xl hover:scale-105 flex justify-between items-center w-full border-2 border-gray-700"
-                >
-                    <div className="text-left">
-                        <h3 className="text-2xl sm:text-3xl font-extrabold mb-1 flex items-center text-oyun-text-light group-hover:text-oyun-arkaplan">
-                            <span className="text-4xl sm:text-5xl mr-4">🧠</span>
-                            Beyin Avı
-                        </h3>
-                        <p className="text-base sm:text-lg text-oyun-text-dark group-hover:text-oyun-arkaplan">
-                            Yanlış yaparsan ipucu alırsın ve bir şansın daha olur.
-                        </p>
-                    </div>
-                    <span className="text-4xl sm:text-5xl">🚀</span>
-                </button>
-
-                {/* Mod 2: Zaman Yarışı */}
-                <button
-                    onClick={() => onStartGame('timeAttack')}
-                    className="group bg-oyun-kart-dark-light p-4 sm:p-6 rounded-2xl mb-4 cursor-pointer transition-all duration-300 hover:bg-oyun-accent hover:shadow-xl hover:scale-105 flex justify-between items-center w-full border-2 border-gray-700"
-                >
-                    <div className="text-left">
-                        <h3 className="text-2xl sm:text-3xl font-extrabold mb-1 flex items-center text-oyun-text-light group-hover:text-oyun-arkaplan">
-                            <span className="text-4xl sm:text-5xl mr-4">⏰</span>
-                            Zaman Yarışı
-                        </h3>
-                        <p className="text-base sm:text-lg text-oyun-text-dark group-hover:text-oyun-arkaplan">
-                            Hızlı ol! İpucu yok, ikinci şans yok. En çok AI'yı yakala!
-                        </p>
-                    </div>
-                    <span className="text-4xl sm:text-5xl">⏳</span>
-                </button>
-
-                {/* YENİ MOD: Seri Modu */}
-                <button
-                    onClick={() => onStartGame('streak')}
-                    className="group bg-oyun-kart-dark-light p-4 sm:p-6 rounded-2xl cursor-pointer transition-all duration-300 hover:bg-oyun-yesil hover:shadow-xl hover:scale-105 flex justify-between items-center w-full border-2 border-gray-700"
-                >
-                    <div className="text-left">
-                        <h3 className="text-2xl sm:text-3xl font-extrabold mb-1 flex items-center text-oyun-text-light group-hover:text-oyun-arkaplan">
-                            <span className="text-4xl sm:text-5xl mr-4">⚡</span>
-                            Seri Modu
-                        </h3>
-                        <p className="text-base sm:text-lg text-oyun-text-dark group-hover:text-oyun-arkaplan">
-                            Tek bir yanlışta oyun biter. En uzun seriyi yap!
-                        </p>
-                    </div>
-                    <span className="text-4xl sm:text-5xl">🎯</span>
-                </button>
+            {/* Logo ve Başlık Alanı (Daha Kompakt) */}
+            <div className="mb-6 text-center transform hover:scale-105 transition-transform duration-500">
+                <div className="text-5xl sm:text-6xl mb-2 filter drop-shadow-neon-primary animate-bounce-slow">
+                    🕵️‍♂️
+                </div>
+                <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold  bg-clip-text bg-gradient-to-r from-oyun-primary via-white to-oyun-accent font-orbitron drop-shadow-[0_0_10px_rgba(0,245,212,0.5)]">
+                    AI DEDEKTİFİ
+                </h1>
+                <p className="mt-2 text-base sm:text-lg text-oyun-text-dark max-w-lg mx-auto font-light tracking-wide">
+                    Gerçek mi, Yapay Zeka mı? <br/>
+                    <span className="text-oyun-primary font-bold">Gözlerine ne kadar güveniyorsun?</span>
+                </p>
             </div>
+
+            {/* Menü Kartı (Daha Sıkı ve Derli Toplu) */}
+            <div className="bg-oyun-kart-dark/80 backdrop-blur-xl p-5 sm:p-8 rounded-2xl shadow-2xl w-full border border-white/10 relative overflow-hidden group-container">
+
+                {/* Süsleme Işıkları */}
+                <div className="absolute top-0 right-0 -mt-8 -mr-8 w-32 h-32 bg-oyun-primary/20 rounded-full blur-2xl pointer-events-none"></div>
+                <div className="absolute bottom-0 left-0 -mb-8 -ml-8 w-32 h-32 bg-oyun-accent/20 rounded-full blur-2xl pointer-events-none"></div>
+
+                <h2 className="text-xl sm:text-2xl font-bold mb-6 text-center text-white/90 font-orbitron uppercase tracking-widest border-b border-white/10 pb-3">
+                    Oyun Modunu Seç
+                </h2>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {/* Mod 1: Beyin Avı */}
+                    <button
+                        onClick={() => onStartGame('classic')}
+                        className="group relative bg-gradient-to-br from-gray-800 to-gray-900 p-4 rounded-xl border border-gray-700 hover:border-oyun-primary transition-all duration-300 hover:shadow-[0_0_15px_rgba(0,245,212,0.3)] hover:-translate-y-1 text-left flex flex-col justify-between h-full"
+                    >
+                        <div>
+                            <div className="text-2xl mb-3 bg-gray-700 w-12 h-12 flex items-center justify-center rounded-lg group-hover:bg-oyun-primary group-hover:text-black transition-colors">🧠</div>
+                            <h3 className="text-lg font-bold text-white mb-1 group-hover:text-oyun-primary">Beyin Avı</h3>
+                            <p className="text-xs text-gray-400 leading-relaxed">
+                                Klasik mod. Yanlışta ipucu al, tekrar dene.
+                            </p>
+                        </div>
+                        <div className="mt-3 text-oyun-primary text-xs font-bold flex items-center opacity-0 group-hover:opacity-100 transition-opacity">
+                            BAŞLA <span className="ml-1">→</span>
+                        </div>
+                    </button>
+
+                    {/* Mod 2: Zaman Yarışı */}
+                    <button
+                        onClick={() => onStartGame('timeAttack')}
+                        className="group relative bg-gradient-to-br from-gray-800 to-gray-900 p-4 rounded-xl border border-gray-700 hover:border-oyun-accent transition-all duration-300 hover:shadow-[0_0_15px_rgba(255,0,168,0.3)] hover:-translate-y-1 text-left flex flex-col justify-between h-full"
+                    >
+                        <div>
+                            <div className="text-2xl mb-3 bg-gray-700 w-12 h-12 flex items-center justify-center rounded-lg group-hover:bg-oyun-accent group-hover:text-white transition-colors">⏰</div>
+                            <h3 className="text-lg font-bold text-white mb-1 group-hover:text-oyun-accent">Zaman Yarışı</h3>
+                            <p className="text-xs text-gray-400 leading-relaxed">
+                                60 saniye! İpucu yok, ikinci şans yok. Hızlı ol.
+                            </p>
+                        </div>
+                        <div className="mt-3 text-oyun-accent text-xs font-bold flex items-center opacity-0 group-hover:opacity-100 transition-opacity">
+                            YARIŞ <span className="ml-1">→</span>
+                        </div>
+                    </button>
+
+                    {/* Mod 3: Seri Modu */}
+                    <button
+                        onClick={() => onStartGame('streak')}
+                        className="group relative bg-gradient-to-br from-gray-800 to-gray-900 p-4 rounded-xl border border-gray-700 hover:border-yellow-400 transition-all duration-300 hover:shadow-[0_0_15px_rgba(250,204,21,0.3)] hover:-translate-y-1 text-left flex flex-col justify-between h-full"
+                    >
+                        <div>
+                            <div className="text-2xl mb-3 bg-gray-700 w-12 h-12 flex items-center justify-center rounded-lg group-hover:bg-yellow-400 group-hover:text-black transition-colors">⚡</div>
+                            <h3 className="text-lg font-bold text-white mb-1 group-hover:text-yellow-400">Seri Modu</h3>
+                            <p className="text-xs text-gray-400 leading-relaxed">
+                                Tek yanlışta oyun biter. En uzun seriyi yap!
+                            </p>
+                        </div>
+                        <div className="mt-3 text-yellow-400 text-xs font-bold flex items-center opacity-0 group-hover:opacity-100 transition-opacity">
+                            DENE <span className="ml-1">→</span>
+                        </div>
+                    </button>
+                </div>
+            </div>
+
+            {/* Footer / İmza */}
+            <footer className="mt-6 text-oyun-text-dark text-xs opacity-60 hover:opacity-100 transition-opacity">
+                <p>Geliştiren: <span className="text-oyun-primary font-bold">Mustafa</span> </p>
+            </footer>
         </div>
     );
 };
