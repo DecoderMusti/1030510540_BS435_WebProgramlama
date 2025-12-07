@@ -14,3 +14,11 @@ export interface RoundData {
     aiImageId: string;
     hint: string;
 }
+
+// YENİ EKLENEN KISIM: Skor Kaydı Tipi
+export interface ScoreEntry {
+    name: string;
+    score: number;
+    mode: GameMode;
+    date: string; // Hangi tarihte oynadığı
+}
