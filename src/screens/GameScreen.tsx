@@ -14,10 +14,11 @@ const GameScreen: React.FC<GameScreenProps> = ({ gameMode, onGameEnd, score }) =
     const [guessState, setGuessState] = useState<GuessState>('first');
     const [hint, setHint] = useState<string | null>(null);
     const [selectedImageId, setSelectedImageId] = useState<string | null>(null);
-    const [timer, setTimer] = useState(60);
+    const [timer, setTimer] = useState(60); // Başlangıç değeri
     const [isPaused, setIsPaused] = useState(false);
     const [animation, setAnimation] = useState('');
 
+    // --- 1. FONKSİYON: Sadece yeni resimleri yükler (Süreye dokunmaz!) ---
     const loadNewRound = useCallback(() => {
         setRoundData(getNewRoundData());
         setGuessState('first');
@@ -25,19 +26,29 @@ const GameScreen: React.FC<GameScreenProps> = ({ gameMode, onGameEnd, score }) =
         setSelectedImageId(null);
         setIsPaused(false);
         setAnimation('');
-        if(gameMode === 'timeAttack') setTimer(60); // Zamanı sıfırla
-    }, [gameMode]);
+        // DİKKAT: setTimer(60) buradan kaldırıldı! Artık her turda süre sıfırlanmayacak.
+    }, []);
 
+    // --- 2. EFFECT: Oyun Başlatıcı (Süreyi Kurar ve İlk Turu Yükler) ---
     useEffect(() => {
+        // Eğer mod Zaman Yarışı ise süreyi 60 yap (Sadece oyun başında 1 kere çalışır)
+        if (gameMode === 'timeAttack') {
+            setTimer(60);
+        }
         loadNewRound();
-    }, [loadNewRound]);
+    }, [gameMode, loadNewRound]);
 
+    // --- 3. EFFECT: Sayaç Mantığı ---
     useEffect(() => {
         if (gameMode !== 'timeAttack' || isPaused) return;
+
+        // Süre bittiyse oyunu bitir
         if (timer <= 0) {
             onGameEnd(false, score);
             return;
         }
+
+        // Her saniye azalt
         const interval = setInterval(() => setTimer(prev => prev - 1), 1000);
         return () => clearInterval(interval);
     }, [gameMode, timer, isPaused, onGameEnd, score]);
@@ -46,27 +57,24 @@ const GameScreen: React.FC<GameScreenProps> = ({ gameMode, onGameEnd, score }) =
         if (isPaused) return;
 
         setSelectedImageId(id);
-        setIsPaused(true); // Tıklama anında oyunu dondur (sonuç gösterimi için)
+        setIsPaused(true); // Sonuç göstermek için durdur
 
         const isCorrect = id === roundData?.aiImageId;
 
         if (gameMode === 'classic') {
             if (guessState === 'first') {
                 if (isCorrect) {
-                    // İlk hakta doğru -> KAZANDI
                     setTimeout(() => onGameEnd(true), 1500);
                 } else {
-                    // İlk hakta yanlış -> DEVAM EDİYOR (İpucu ver)
                     setAnimation('shake');
                     setTimeout(() => {
                         setHint(roundData?.hint || '');
                         setGuessState('second');
-                        setIsPaused(false); // Tekrar tıklamaya izin ver
+                        setIsPaused(false);
                         setAnimation('');
                     }, 1000);
                 }
             } else {
-                // İkinci hak -> SONUÇ NE OLURSA OLSUN BİTER
                 setTimeout(() => onGameEnd(isCorrect), 1500);
             }
         } else if (gameMode === 'streak') {
@@ -96,7 +104,6 @@ const GameScreen: React.FC<GameScreenProps> = ({ gameMode, onGameEnd, score }) =
         return <div className="text-3xl text-oyun-text-light">Resimler Yükleniyor...</div>;
     }
 
-    // Mod adını belirle
     let modeName = '';
     if (gameMode === 'classic') modeName = 'Beyin Avı';
     else if (gameMode === 'timeAttack') modeName = 'Zaman Yarışı';
@@ -104,8 +111,18 @@ const GameScreen: React.FC<GameScreenProps> = ({ gameMode, onGameEnd, score }) =
 
     return (
         <div className="w-full flex flex-col items-center p-4 sm:p-8 max-w-6xl animate-fade-in text-oyun-text-light">
-            {/* Üst Bar */}
-            <header className="w-full mb-8 flex justify-between items-center text-lg sm:text-xl md:text-3xl font-extrabold">
+
+            {/* --- YENİ EKLENEN KISIM: ANA BAŞLIK (StartScreen ile tutarlı) --- */}
+            <div className="mb-4 text-center">
+                <div className="text-4xl sm:text-5xl mb-1 filter drop-shadow-neon-primary animate-bounce-slow">🕵️‍♂️</div>
+                <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-oyun-primary via-white to-oyun-accent font-orbitron drop-shadow-[0_0_8px_rgba(0,245,212,0.5)]">
+                    AI DEDEKTİFİ
+                </h2>
+            </div>
+            {/* ---------------------------------------------------------------- */}
+
+            {/* Üst Bar (Skor, Mod, Süre) */}
+            <header className="w-full mb-6 flex justify-between items-center text-lg sm:text-xl md:text-2xl font-extrabold bg-oyun-kart-dark/50 p-3 rounded-xl backdrop-blur-sm border border-white/10">
                 <div>Mod: <span className="text-oyun-primary capitalize">{modeName}</span></div>
                 <div>Skor: <span className="text-oyun-accent">{score}</span></div>
                 {gameMode === 'timeAttack' && (
@@ -116,8 +133,8 @@ const GameScreen: React.FC<GameScreenProps> = ({ gameMode, onGameEnd, score }) =
                 )}
             </header>
 
-            {/* Başlık */}
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold mb-8 text-oyun-primary drop-shadow-neon-primary font-orbitron text-center">
+            {/* Dinamik Alt Başlık (Kim Saklanıyor vb.) */}
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold mb-6 text-oyun-primary drop-shadow-neon-primary font-orbitron text-center">
                 {gameMode === 'classic' && guessState === 'first' && 'KİM SAKLANIYOR?'}
                 {gameMode === 'classic' && guessState === 'second' && 'İPUCUNU KULLAN, TEKRAR DENE!'}
                 {gameMode === 'timeAttack' && 'HIZLI PARMAKLAR, AI YAKALAR!'}
@@ -127,37 +144,22 @@ const GameScreen: React.FC<GameScreenProps> = ({ gameMode, onGameEnd, score }) =
             {/* Görsel Izgarası */}
             <div className={`grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-6 max-w-6xl w-full mb-8 ${animation}`}>
                 {roundData.images.map(image => {
-
                     const isSelected = image.id === selectedImageId;
                     let isRevealed = false;
 
-                    // --- KART GÖSTERİM MANTIĞI ---
+                    // 1. Kullanıcı tıkladıysa göster
+                    if (isPaused && isSelected) isRevealed = true;
 
-                    // 1. Kullanıcı bu karta tıkladıysa (Sonuç ne olursa olsun göster)
-                    if (isPaused && isSelected) {
-                        isRevealed = true;
-                    }
-
-                    // 2. Tur tamamen bittiyse HERKESİ göster (AI ve diğerlerini aç)
+                    // 2. Tur bittiyse herkesi göster
                     let isRoundOver = false;
-
                     if (gameMode === 'classic') {
-                        // Klasik Modda Tur Bitme Şartları:
-                        // a) İkinci tahmin yapıldıysa
                         if (guessState === 'second' && isPaused) isRoundOver = true;
-                        // b) İlk tahmin yapıldı VE Doğruysa (Yanlışsa bitmez!)
                         if (guessState === 'first' && isPaused && isSelected && image.id === roundData.aiImageId) isRoundOver = true;
                     } else {
-                        // Diğer modlarda pause olduysa tur bitmiştir
                         if (isPaused) isRoundOver = true;
                     }
+                    if (isRoundOver) isRevealed = true;
 
-                    if (isRoundOver) {
-                        isRevealed = true;
-                    }
-                    // -----------------------------
-
-                    // Beyin avında, ikinci haktaysak ve bu kart daha önce seçilmiş (yanlış) kartsa, tıklanamaz olsun.
                     const isPreviouslyWrongGuess = gameMode === 'classic' && guessState === 'second' && isSelected;
 
                     return (
