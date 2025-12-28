@@ -1,4 +1,7 @@
-export interface ImageData {
+// src/types/game.ts
+
+// İsim değişti: ImageData -> GameImage
+export interface GameImage {
     id: string;
     url: string;
     isAI: boolean;
@@ -10,15 +13,15 @@ export type GameState = 'startScreen' | 'playing' | 'resultScreen';
 export type GuessState = 'first' | 'second';
 
 export interface RoundData {
-    images: ImageData[];
+    // Burada da güncelledik
+    images: GameImage[];
     aiImageId: string;
     hint: string;
 }
 
-// YENİ EKLENEN KISIM: Skor Kaydı Tipi
 export interface ScoreEntry {
     name: string;
     score: number;
     mode: GameMode;
-    date: string; // Hangi tarihte oynadığı
+    date: string;
 }
